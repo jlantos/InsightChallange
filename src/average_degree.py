@@ -9,10 +9,11 @@
 # Import libraries
 import sys
 import json
+import sets
 import pandas as pd
 
 
-
+# Take a list of hashtag lists and build the dict of graph edges 
 def build_edges(data):
   # Dict for edges, all edges are listed for both nodes
   edges = {}
@@ -40,11 +41,12 @@ def build_edges(data):
   return edges
 
 
+# Average graph degree calculation
 def calc_average_degree(edges):
   # Calc average degree from number of edges (taking into account duplicate
-  # representation) and number of nodes (with edges)
+  # representation) and number of nodes (with at least 1 edge)
   # (Handshaking lemma)
-  two_times_number_of_edges = sum(len(node) for node in edges.values())
+  two_times_number_of_edges = sum(len(set(node)) for node in edges.values())
   number_of_nodes = len(edges)
   average_degree = two_times_number_of_edges / float(number_of_nodes)
   
@@ -53,7 +55,8 @@ def calc_average_degree(edges):
   return '.'.join((before_dec, after_dec[:2]))
 
 
-# main()
+# main() reads input tweet file, and outputs average graph degree for each line
+# added
 def main():
   if len(sys.argv) != 3:
     print 'Usage: ./average_degree.py file-to-read output-file-name'

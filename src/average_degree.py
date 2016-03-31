@@ -65,8 +65,6 @@ def main():
     sys.exit(1)
 
   data = []
-  datalimit = 0
-  proper = 0
   linenum = 0
 
   # Open input amd output files

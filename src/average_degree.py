@@ -9,11 +9,14 @@
 # Import libraries
 import sys
 import json
-import pandas as pd
+import numpy as np
+from datetime import datetime
 
 
-# Take a list of hashtag lists and build the dict of graph edges 
+
+
 def build_edges(data):
+  """Take a list of hashtag lists and build the dict of graph edges"""
   # Dict for edges, all edges are listed for both nodes
   edges = {}
   for tweet in data:
@@ -26,7 +29,7 @@ def build_edges(data):
         new_list = tags[current_index + 1 : ]
        
         # Iterate through the rest of the tags and either add the edge 
-        # to existing node 
+        # to existing node or create new node
         for item in new_list:
           if tag in edges:
             edges[tag].append(item)
@@ -40,26 +43,37 @@ def build_edges(data):
   return edges
 
 
-# Average graph degree calculation
-def calc_average_degree(edges):
-  # Calc average degree from number of edges (taking into account duplicate
-  # representation) and number of nodes (with at least 1 edge)
-  # (Handshaking lemma)
-  two_times_number_of_edges = sum(len(set(node)) for node in edges.values())
-  number_of_nodes = len(edges)
-  average_degree = two_times_number_of_edges / float(number_of_nodes)
+def format_number(num):
+  """Crop (and pad) float to 2 decimal points without rounding and convert to string"""
+  before_dec, after_dec = str(num).split('.')
   
-  # Crop float result to 2 decimal points without rounding
-  before_dec, after_dec = str(average_degree).split('.')
   while len(after_dec) < 2:
     after_dec += '0'    
 
-  return '.'.join((before_dec, after_dec[:2]))
+  return'.'.join((before_dec, after_dec[:2]))
 
 
-# main() reads input tweet file, and outputs average graph degree for each line
-# Only tweets within the last 60 seconds contribute to the graph
+def calc_average_degree(edges):
+  """ Calc average graph degree from number of edges (taking into account 
+      duplicate representation) and number of nodes (with at least 1 edge)
+      (Handshaking lemma) """
+  two_times_number_of_edges = sum(len(set(node)) for node in edges.values())
+  number_of_nodes = len(edges)
+  average_degree = two_times_number_of_edges / float(number_of_nodes)
+
+  #return format_number(average_degree)
+  return np.floor(100*average_degree)/100
+
+def convert_time(time_string):
+  """Convert created_at string time to datetime"""
+  return datetime.strptime(time_string, "%a %b %d %H:%M:%S +0000 %Y")
+
+
+
+
 def main():
+  """Reads input tweet file, and outputs average graph degree for each line.
+     Only tweets within the last 60 seconds contribute to the graph"""
   if len(sys.argv) != 3:
     print 'Usage: ./average_degree.py file-to-read output-file-name'
     sys.exit(1)
@@ -89,17 +103,18 @@ def main():
     except:
       try:
         time = tweet['created_at']
+        time = convert_time(time)
+        print time
         hashtags = [hashtag['text'] for hashtag in tweet['entities']['hashtags']]
         data.append([time, hashtags])
-        # print time
         proper += 1
         average_degree = calc_average_degree(build_edges(data))
-        output_file.write(average_degree + '\n')
-        print average_degree
+        output_file.write("%.2f" % average_degree + '\n')
+        print "%.2f" % average_degree
      
       # Skip if none of the above
       except:
-        print linenum
+        print "Problem in line " + str(linenum)
         continue
 
   #average_degree = calc_average_degree(build_edges(data))

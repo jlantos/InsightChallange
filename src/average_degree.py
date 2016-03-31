@@ -13,8 +13,6 @@ import numpy as np
 from datetime import datetime
 
 
-
-
 def build_edges(data):
   """Take a list of hashtag lists and build the dict of graph edges"""
   # Dict for edges, all edges are listed for both nodes
@@ -43,16 +41,6 @@ def build_edges(data):
   return edges
 
 
-def format_number(num):
-  """Crop (and pad) float to 2 decimal points without rounding and convert to string"""
-  before_dec, after_dec = str(num).split('.')
-  
-  while len(after_dec) < 2:
-    after_dec += '0'    
-
-  return'.'.join((before_dec, after_dec[:2]))
-
-
 def calc_average_degree(edges):
   """ Calc average graph degree from number of edges (taking into account 
       duplicate representation) and number of nodes (with at least 1 edge)
@@ -61,14 +49,12 @@ def calc_average_degree(edges):
   number_of_nodes = len(edges)
   average_degree = two_times_number_of_edges / float(number_of_nodes)
 
-  #return format_number(average_degree)
   return np.floor(100*average_degree)/100
+
 
 def convert_time(time_string):
   """Convert created_at string time to datetime"""
   return datetime.strptime(time_string, "%a %b %d %H:%M:%S +0000 %Y")
-
-
 
 
 def main():
@@ -96,18 +82,15 @@ def main():
     # Check if tweet is data limit
     try:
       limit = tweet['limit']
-      datalimit += 1
-      # print limit
-    
+
     # Check if tweet is non-empty "useful" tweet
     except:
       try:
         time = tweet['created_at']
         time = convert_time(time)
-        print time
         hashtags = [hashtag['text'] for hashtag in tweet['entities']['hashtags']]
         data.append([time, hashtags])
-        proper += 1
+
         average_degree = calc_average_degree(build_edges(data))
         output_file.write("%.2f" % average_degree + '\n')
         print "%.2f" % average_degree
@@ -117,14 +100,7 @@ def main():
         print "Problem in line " + str(linenum)
         continue
 
-  #average_degree = calc_average_degree(build_edges(data))
-
-  #print average_degree
  
-  #print data
-  #print len(data), proper, datalimit
-  #print data[-10:]
-
   # Close files
   tweets_file.close()
   output_file.close()

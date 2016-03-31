@@ -9,7 +9,6 @@
 # Import libraries
 import sys
 import json
-import sets
 import pandas as pd
 
 
@@ -52,11 +51,14 @@ def calc_average_degree(edges):
   
   # Crop float result to 2 decimal points without rounding
   before_dec, after_dec = str(average_degree).split('.')
+  while len(after_dec) < 2:
+    after_dec += '0'    
+
   return '.'.join((before_dec, after_dec[:2]))
 
 
 # main() reads input tweet file, and outputs average graph degree for each line
-# added
+# Only tweets within the last 60 seconds contribute to the graph
 def main():
   if len(sys.argv) != 3:
     print 'Usage: ./average_degree.py file-to-read output-file-name'
@@ -67,17 +69,23 @@ def main():
   proper = 0
   linenum = 0
 
-  # Open input file
+  # Open input amd output files
   tweets_file = open(sys.argv[1], "r")
+  output_file = open(sys.argv[2], "w")
+
 
   # Process input file line by line
   for line in tweets_file:
     tweet = json.loads(line)
     linenum += 1
+
+    # Check if tweet is data limit
     try:
       limit = tweet['limit']
       datalimit += 1
       # print limit
+    
+    # Check if tweet is non-empty "useful" tweet
     except:
       try:
         time = tweet['created_at']
@@ -85,19 +93,26 @@ def main():
         data.append([time, hashtags])
         # print time
         proper += 1
+        average_degree = calc_average_degree(build_edges(data))
+        output_file.write(average_degree + '\n')
+        print average_degree
+     
+      # Skip if none of the above
       except:
         print linenum
         continue
 
-  average_degree = calc_average_degree(build_edges(data))
+  #average_degree = calc_average_degree(build_edges(data))
 
-  print average_degree
+  #print average_degree
  
   #print data
   #print len(data), proper, datalimit
   #print data[-10:]
 
-
+  # Close files
+  tweets_file.close()
+  output_file.close()
 
 
 if __name__ == '__main__':

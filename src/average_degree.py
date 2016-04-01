@@ -15,7 +15,6 @@ import heapq
 import time
 
 
-
 def extract_fields(tweet):
   """Extract created_at and hashtag fields from a tweet"""
   time = tweet["created_at"]
@@ -31,7 +30,7 @@ def build_edges(data):
   edges = {}
   for tweet in data:
     tags = tweet[1]
-    print tags 
+
     # Create edge if there are at least 2 tags
     if len(tags) > 1: 
       for tag in tags:
@@ -90,13 +89,7 @@ def main():
   for line in tweets_file:
     tweet = json.loads(line)
 
-
-#    # Check if tweet is data limit
-#    try:
-#      limit = tweet["limit"]
-#
     # Check if tweet is non-empty "useful" tweet
-#    except:
     try:
       time, hashtags = extract_fields(tweet)
 
@@ -105,13 +98,10 @@ def main():
       # First tweet goes to heap and defines max time
       if line_num == 1:
         heapq.heappush(data, (time, hashtags))
-        print data
         max_time = time
-        print "max time " + str(max_time)
         average_degree = calc_average_degree(build_edges(data))
       else:
         time_diff = max_time - time
-        print time_diff.total_seconds()
          
         # Check if new tweet arrived less than 1 min earlier
         if time_diff.total_seconds() < 60:
@@ -120,10 +110,10 @@ def main():
           # Update max_time and remove older tweets from heap
           if time > max_time:
             max_time = time
-            print "max time " + str(max_time)
+
             while (max_time-data[0][0]).total_seconds() >= 60:
               heapq.heappop(data) 
-              print data
+
      
             average_degree = calc_average_degree(build_edges(data))
 
@@ -153,4 +143,3 @@ if __name__ == "__main__":
   main()
 
 print("--- Running time: %s seconds ---" % (time.time() - start_time))
-

@@ -95,60 +95,62 @@ def main():
 #    try:
 #      limit = tweet["limit"]
 #
-#    # Check if tweet is non-empty "useful" tweet
+    # Check if tweet is non-empty "useful" tweet
 #    except:
-#      try:
-    time, hashtags = extract_fields(tweet)
+    try:
+      time, hashtags = extract_fields(tweet)
 
-    line_num += 1
+      line_num += 1
 
-    # First tweet goes to heap and defines max time
-    if line_num == 1:
-      heapq.heappush(data, (time, hashtags))
-      print data
-      max_time = time
-      print "max time " + str(max_time)
-      average_degree = calc_average_degree(build_edges(data))
-    else:
-      time_diff = max_time - time
-      print time_diff.total_seconds()
-      
-      # Check if new tweet arrived less than 1 min earlier
-      if time_diff.total_seconds() < 60:
-        # Add tweet to heap
+      # First tweet goes to heap and defines max time
+      if line_num == 1:
         heapq.heappush(data, (time, hashtags))
-        # Update max_time and remove older tweets from heap
-        if time > max_time:
-          max_time = time
-          print "max time " + str(max_time)
-          while (max_time-data[0][0]).total_seconds() >= 60:
-            heapq.heappop(data) 
-            print data
-      
+        print data
+        max_time = time
+        print "max time " + str(max_time)
         average_degree = calc_average_degree(build_edges(data))
-
       else:
-        average_degree = average_degree_prev
-
-    average_degree_prev = average_degree
-    
-    output_file.write("%.2f" % average_degree + "\n")
-    print "%.2f" % average_degree
+        time_diff = max_time - time
+        print time_diff.total_seconds()
+         
+        # Check if new tweet arrived less than 1 min earlier
+        if time_diff.total_seconds() < 60:
+          # Add tweet to heap
+          heapq.heappush(data, (time, hashtags))
+          # Update max_time and remove older tweets from heap
+          if time > max_time:
+            max_time = time
+            print "max time " + str(max_time)
+            while (max_time-data[0][0]).total_seconds() >= 60:
+              heapq.heappop(data) 
+              print data
      
-      # Skip if none of the above
-#      except:
-#        print "Problem in line " + str(linenum)
-#        continue
+            average_degree = calc_average_degree(build_edges(data))
 
- 
+          else:
+            average_degree = average_degree_prev
+
+      average_degree_prev = average_degree
+    
+      output_file.write("%.2f" % average_degree + "\n")
+      print "%.2f" % average_degree
+     
+      except:
+        continue
+
   # Print farewall message
-  print("Processed %d valid tweets." % line_num)
+  print("--- Processed %d valid tweets ---" % line_num)
+
   # Close files
   tweets_file.close()
   output_file.close()
 
+
+# Timing run
 start_time = time.time()
+
 if __name__ == "__main__":
   main()
-print("--- %s seconds ---" % (time.time() - start_time))
+
+print("--- Running time: %s seconds ---" % (time.time() - start_time))
 

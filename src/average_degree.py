@@ -58,7 +58,10 @@ def calc_average_degree(edges):
       (Handshaking lemma) """
   two_times_number_of_edges = sum(len(set(node)) for node in edges.values())
   number_of_nodes = len(edges)
-  average_degree = two_times_number_of_edges / float(number_of_nodes)
+  if number_of_nodes > 0:
+    average_degree = two_times_number_of_edges / float(number_of_nodes)
+  else:
+    average_degree = 0.0
 
   return np.floor(100*average_degree)/100
 
@@ -128,7 +131,6 @@ def main():
       # Get created_at and hashtag fields
       time, hashtags = extract_fields(tweet)
       line_num += 1
-      #print time, hashtags
 
       # Calculate average vertex degree and print it to file
       average_degree, max_time = process_tweet(data, time, hashtags, line_num, 

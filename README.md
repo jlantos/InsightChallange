@@ -2,7 +2,7 @@
 
 ## Table of contents
 1. [Challange summary](README.md#challange-summary)
-2. Run the code 
+2. [Run the code](README.md#run-the-code) 
 3. About the algorithm
 4. Testing
 

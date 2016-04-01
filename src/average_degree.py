@@ -135,8 +135,8 @@ def main():
       output_file.write("%.2f" % average_degree + "\n")
       print "%.2f" % average_degree
      
-      except:
-        continue
+    except:
+      continue
 
   # Print farewall message
   print("--- Processed %d valid tweets ---" % line_num)

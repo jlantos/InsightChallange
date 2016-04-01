@@ -68,6 +68,41 @@ def convert_time(time_string):
   return datetime.strptime(time_string, "%a %b %d %H:%M:%S +0000 %Y")
 
 
+def process_tweet(data, time, hashtags, line_num, max_time, average_degree_prev):
+  """Check if the new tweet falls into current time window, handle moving window, 
+     update Twitter graph, and calculate average vertex degree"""
+  graph_changed = 0
+
+  # First tweet goes to heap and defines max time
+  if line_num == 1:
+    heapq.heappush(data, (time, hashtags))
+    max_time = time
+    graph_changed = 1  
+  else: 
+    # Check if new tweet arrived less than 1 min earlier
+    if (max_time - time).total_seconds() < 60:
+      # Add tweet to heap
+      heapq.heappush(data, (time, hashtags))
+      if len(hashtags) > 1:
+        graph_changed = 1
+
+      # Update max_time and remove older tweets from heap
+      if time > max_time:
+        max_time = time
+
+        while (max_time-data[0][0]).total_seconds() >= 60:
+          heapq.heappop(data)
+          graph_changed = 1
+
+  # Recalculate degree if the graph changed or return previous value
+  if graph_changed:
+    average_degree = calc_average_degree(build_edges(data))
+  else:
+    average_degree = average_degree_prev
+
+  return average_degree, max_time
+
+
 def main():
   """Reads input tweet file, and outputs average graph degree for each line.
      Only tweets within the last 60 seconds contribute to the graph"""
@@ -78,12 +113,11 @@ def main():
   data = []
   line_num = 0
   average_degree = 0
-  average_degree_prev = 0
+  max_time = 0
 
   # Open input amd output files
   tweets_file = open(sys.argv[1], "r")
   output_file = open(sys.argv[2], "w")
-
 
   # Process input file line by line
   for line in tweets_file:
@@ -91,37 +125,14 @@ def main():
 
     # Check if tweet is non-empty "useful" tweet
     try:
+      # Get created_at and hashtag fields
       time, hashtags = extract_fields(tweet)
-
       line_num += 1
+      #print time, hashtags
 
-      # First tweet goes to heap and defines max time
-      if line_num == 1:
-        heapq.heappush(data, (time, hashtags))
-        max_time = time
-        average_degree = calc_average_degree(build_edges(data))
-      else:
-        time_diff = max_time - time
-         
-        # Check if new tweet arrived less than 1 min earlier
-        if time_diff.total_seconds() < 60:
-          # Add tweet to heap
-          heapq.heappush(data, (time, hashtags))
-          # Update max_time and remove older tweets from heap
-          if time > max_time:
-            max_time = time
-
-            while (max_time-data[0][0]).total_seconds() >= 60:
-              heapq.heappop(data) 
-
-     
-            average_degree = calc_average_degree(build_edges(data))
-
-          else:
-            average_degree = average_degree_prev
-
-      average_degree_prev = average_degree
-    
+      # Calculate average vertex degree and print it to file
+      average_degree, max_time = process_tweet(data, time, hashtags, line_num, 
+        max_time, average_degree)
       output_file.write("%.2f" % average_degree + "\n")
       print "%.2f" % average_degree
      

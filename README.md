@@ -9,4 +9,5 @@
 
 ## Challange summary 
 [Back to Table of contents](README.md#table-of-contents)
+
 Given a (raw) tweet file calculate the average degree of vertex in the Twitter hashtag graph for the last 60 seconds. 

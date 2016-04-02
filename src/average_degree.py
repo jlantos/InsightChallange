@@ -136,7 +136,7 @@ def main():
       # Get created_at and hashtag fields
       time, hashtags = extract_fields(tweet)
       line_num += 1
-    except:
+    except KeyError:
       continue
 
     # Calculate average vertex degree and print it to file

@@ -16,7 +16,7 @@ import time
 
 
 def extract_fields(tweet):
-  """Extract created_at and hashtag fields from a tweet, convert time to 
+  """Extract created_at and hashtags fields from a tweet, convert time to 
      datetime format and keep only unique hashtags in a list"""
   time = tweet["created_at"]
   time = convert_time(time)

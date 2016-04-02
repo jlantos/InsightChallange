@@ -14,6 +14,7 @@ from datetime import datetime
 import heapq
 import time
 
+
 # Initialize static variables
 tweet_heap = []
 average_degree_prev = 0
@@ -115,7 +116,7 @@ def process_tweet(time, hashtags, line_num):
 
 def main():
   """Reads input tweet file, and outputs average graph degree for each line.
-     Only tweets within the last 60 seconds contribute to the graph"""
+     Only tweets within the last 60 seconds contribute to the graph."""
   if len(sys.argv) != 3:
     print "Usage: ./average_degree.py file-to-read output-file-name"
     sys.exit(1)

@@ -9,7 +9,7 @@
 # Import libraries
 import sys
 import json
-import numpy as np
+from math import floor
 from datetime import datetime
 import heapq
 import time
@@ -56,14 +56,14 @@ def calc_average_degree(edges):
   """ Calc average graph degree from number of edges (taking into account 
       duplicate representation) and number of nodes (with at least 1 edge)
       (Handshaking lemma) """
-  two_times_number_of_edges = sum(len(set(node)) for node in edges.values())
   number_of_nodes = len(edges)
   if number_of_nodes > 0:
+    two_times_number_of_edges = sum(len(set(node)) for node in edges.values())
     average_degree = two_times_number_of_edges / float(number_of_nodes)
   else:
     average_degree = 0.0
 
-  return np.floor(100*average_degree)/100
+  return floor(100*average_degree)/100
 
 
 def convert_time(time_string):

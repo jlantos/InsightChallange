@@ -15,17 +15,13 @@ import heapq
 import time
 
 
-# Initialize static variables
-tweet_heap = []
-average_degree_prev = 0
-max_time = datetime(1970, 1, 1, 0, 0, 0)
-
-
 def extract_fields(tweet):
-  """Extract created_at and hashtag fields from a tweet"""
+  """Extract created_at and hashtag fields from a tweet, convert time to 
+     datetime format and keep only unique hashtags"""
   time = tweet["created_at"]
   time = convert_time(time)
   hashtags = [hashtag["text"] for hashtag in tweet["entities"]["hashtags"]]
+  hashtags = list(set(hashtags))
 
   return time, hashtags
 
@@ -80,38 +76,43 @@ def convert_time(time_string):
 def process_tweet(time, hashtags, line_num):
   """Check if the new tweet falls into current time window, handle moving window, 
      update Twitter graph, and calculate average vertex degree"""
-  global max_time, tweet_heap, average_degree_prev
   graph_changed = False
 
   # First tweet goes to heap and defines max time
   if line_num == 1:
-    heapq.heappush(tweet_heap, (time, hashtags))
-    max_time = time
+    heapq.heappush(process_tweet.tweet_heap, (time, hashtags))
+    process_tweet.max_time = time
     graph_changed = True  
   else: 
     # Check if new tweet arrived less than 1 min earlier
-    if (max_time - time).total_seconds() < 60:
+    if (process_tweet.max_time - time).total_seconds() < 60:
       # Add tweet to heap
-      heapq.heappush(tweet_heap, (time, hashtags))
+      heapq.heappush(process_tweet.tweet_heap, (time, hashtags))
       if len(hashtags) > 1:
         graph_changed = True
 
       # Update max_time and remove older tweets from heap
-      if time > max_time:
-        max_time = time
+      if time > process_tweet.max_time:
+        process_tweet.max_time = time
 
-        while (max_time-tweet_heap[0][0]).total_seconds() >= 60:
-          heapq.heappop(tweet_heap)
+        while (process_tweet.max_time-process_tweet.tweet_heap[0][0]).total_seconds() >= 60:
+          heapq.heappop(process_tweet.tweet_heap)
           graph_changed = True
 
   # Recalculate degree if the graph changed or return previous value
   if graph_changed:
-    average_degree = calc_average_degree(build_edges(tweet_heap))
+    average_degree = calc_average_degree(build_edges(process_tweet.tweet_heap))
   else:
-    average_degree = average_degree_prev
+    average_degree = process_tweet.average_degree_prev
 
-  average_degree_prev = average_degree
+  process_tweet.average_degree_prev = average_degree
   return average_degree
+
+
+# Initialize static variables
+process_tweet.tweet_heap = []
+process_tweet.average_degree_prev = 0
+process_tweet.max_time = datetime(1970, 1, 1, 0, 0, 0)
 
 
 def main():
@@ -123,7 +124,7 @@ def main():
 
   line_num = 0
 
-  # Open input amd output files
+  # Open input and output files
   tweets_file = open(sys.argv[1], "r")
   output_file = open(sys.argv[2], "w")
 

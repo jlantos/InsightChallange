@@ -126,15 +126,21 @@ def remove_edges(edges, tags):
        
       # Remove edge from both nodes of the hashtag pair
       for second_tag in new_list:
-        edges[first_tag].remove(second_tag)
-        edges[second_tag].remove(first_tag)
-    
-    # Delete nodes (hashtags) with no edges left
-    edges = {key: value for key, value in edges.items() if len(value)}
-    
+        edges = delete_from_dict(edges, first_tag, second_tag)
+        edges = delete_from_dict(edges, second_tag, first_tag)
+ 
     graph_changed = True
 
   return edges, graph_changed  
+
+
+def delete_from_dict(edges, first_tag, second_tag):
+  """Delete edge from edges dict, and remove key if no edges left"""
+  edges[first_tag].remove(second_tag)
+  if len(edges[first_tag]) == 0:
+    del edges[first_tag]
+
+  return edges
 
 
 def calc_average_degree(edges):
@@ -166,8 +172,11 @@ def main():
 
   # Process input file line by line
   for line in tweets_file:
-    tweet = json.loads(line)
 
+    try:
+      tweet = json.loads(line)
+    except ValueError:
+      continue
     # Check if tweet is non-empty "useful" tweet
     try:
       # Get created_at and hashtag fields
@@ -179,7 +188,7 @@ def main():
     # Calculate average vertex degree and print it to file
     average_degree = process_tweet(time, hashtags, line_num)
     output_file.write("%.2f" % average_degree + "\n")
-    print "%.2f" % average_degree
+    #print "%.2f" % average_degree
      
   # Print farewell message
   print("--- Processed %d valid tweets ---" % line_num)

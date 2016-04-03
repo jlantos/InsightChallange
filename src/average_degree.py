@@ -204,4 +204,4 @@ start_time = time.time()
 if __name__ == "__main__":
   main()
 
-print("--- Running time: %s seconds ---" % (time.time() - start_time))
+print("--- Running time: %.3f seconds ---" % (time.time() - start_time))

@@ -10,8 +10,8 @@
 ## Challange summary 
 [Back to Table of contents](README.md#table-of-contents)
 
-Given a (raw) tweet file calculate the average degree of vertex in the Twitter hashtag graph for the last 60 seconds. 
-
+"Calculate the average degree of a vertex in a Twitter hashtag graph for the last 60 seconds, and update this each time a new tweet appears. You will thus be calculating the average degree over a 60-second sliding window.
+To clarify, a Twitter hashtag graph is a graph connecting all the hashtags that have been mentioned together in a single tweet. Examples of Twitter hashtags graphs are below." See the [original challange description](https://github.com/jlantos/coding-challenge) for further details on the hashtag graph and sliding window.
 
 ## Run the code
 [Back to Table of contents](README.md#table-of-contents)

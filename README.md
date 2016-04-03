@@ -38,4 +38,17 @@ The two main challenges of this task is maintaining the Twitter graph with the s
 ## Testing
 [Back to Table of contents](README.md#table-of-contents)
 
+The folder insight-testsuite contains test cases I've used for unit and system testing. The following test cases were created to test the corresponding behaviour.
+
+test-2-tweets-all-distinct: building Twitter graph, all edges are distinct
+test-2-tweets-almostsametagintweet: hashtags are treated as case-sensitive
+test-2-tweets-duplicate: duplicate edges are counted only once for degree
+test-2-tweets-outoforder-inwindow: less than 1 minute earlier tweet contributes to graph
+test-2-tweets-outoforder-outofwindow: more than 1 minute earlier tweet does not contribute to graph
+test-2-tweets-sametagintweet: self-loops are ignored
+test-3-tweets-windowmoved-linear: old tweets are discarded when window moves
+test-3-tweets-windowmoved-outoforder: max time is correct when older (but in window) tweet arrive
+test-4-tweets-windowmoved-outoforder: older, once out of order tweet is discarded correctly when window moves
+
+
 

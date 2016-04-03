@@ -43,6 +43,7 @@ def process_tweet(time, hashtags, line_num):
     process_tweet.max_time = time
     process_tweet.edges, graph_changed = add_edges(process_tweet.edges, hashtags)
 
+  # Handle further tweets and manage sliding window
   else: 
     # Check if new tweet arrived less than 1 min earlier than max time
     if (process_tweet.max_time - time).total_seconds() < 60:
@@ -172,7 +173,7 @@ def main():
 
   # Process input file line by line
   for line in tweets_file:
-
+    # Check if line is valid json 
     try:
       tweet = json.loads(line)
     except ValueError:
@@ -188,7 +189,6 @@ def main():
     # Calculate average vertex degree and print it to file
     average_degree = process_tweet(time, hashtags, line_num)
     output_file.write("%.2f" % average_degree + "\n")
-    #print "%.2f" % average_degree
      
   # Print farewell message
   print("--- Processed %d valid tweets ---" % line_num)

@@ -19,12 +19,10 @@ See the [original challange description](https://github.com/jlantos/coding-chall
 [Back to Table of contents](README.md#table-of-contents)
 
 run.sh located in the root runs src/average&#95;degree.py to calculate the average hashtag graph degrees. average_degree.py requires two arguments an input and an output file with path. 
-
 Example usage: python src/average&#95;degree.py tweet&#95;input/tweets.txt tweet&#95;output/output.txt
 
 average&#95;degree.py uses only the Python Standard Library ( datetime, heapq, json, math,sys, time).
-
-The code was written and tested in Python 2.7.6 on a Linux 3.13.0-37-generic #64-Ubuntu machine.
+The code has been written and tested in Python 2.7.6 on a Linux 3.13.0-37-generic #64-Ubuntu machine.
 
 
 ## About the algorithm
